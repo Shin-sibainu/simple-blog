@@ -5,7 +5,7 @@
 @layer base {
   :root {
     --background: 210 40% 98%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 224 71.4% 4.1%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
@@ -24,6 +24,7 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
     --radius: 0.5rem;
+    --notion-font: inherit;
   }
 
   .dark {
@@ -56,4 +57,25 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* react-notion-xのスタイル上書き */
+.notion {
+  font-family: inherit !important;
+  color: hsl(0, 0%, 10%) !important;
+}
+
+/* ダークモードの場合 */
+.dark .notion {
+  color: hsl(0, 0%, 90%) !important;
+}
+
+.notion-text {
+  line-height: 1.8 !important;
+  margin: 0.75em 0 !important;
+  letter-spacing: 0.01em !important;
+}
+
+.notion-page-content {
+  padding: 0 0.5em;
 }

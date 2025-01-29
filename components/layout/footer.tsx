@@ -1,6 +1,6 @@
-import Link from 'next/link';
-import { Github, Twitter, Linkedin } from 'lucide-react';
-import { profile } from '@/lib/data';
+import Link from "next/link";
+import { Github, Twitter, Linkedin } from "lucide-react";
+import { profile } from "@/lib/data";
 
 export function Footer() {
   return (
@@ -10,6 +10,17 @@ export function Footer() {
           <div className="text-center md:text-left">
             <p className="text-sm text-muted-foreground">
               © {new Date().getFullYear()} Classic Blog. All rights reserved.
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Built with{" "}
+              <Link
+                href="https://notepress.xyz"
+                className="hover:text-primary"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Notepress
+              </Link>
             </p>
           </div>
           <div className="mt-4 flex space-x-6 md:mt-0">

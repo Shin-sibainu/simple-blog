@@ -19,7 +19,7 @@ export function Header() {
           <div className="flex items-center">
             <Link
               href="/"
-              className="flex items-center space-x-2 text-xl font-serif"
+              className="flex items-center space-x-2 text-xl"
             >
               <Suspense fallback={<span>読み込み中...</span>}>
                 <HeaderContent />
