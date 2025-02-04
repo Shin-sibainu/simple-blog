@@ -40,7 +40,10 @@ export default async function TagsPage() {
         <div className="flex flex-wrap justify-center gap-4 max-w-4xl mx-auto">
           {sortedTags.map((tag) => (
             <Link key={tag.id} href={`/tags/${tag.slug}`}>
-              <Badge variant="secondary" className="text-lg px-4 py-2">
+              <Badge
+                variant="secondary"
+                className="text-lg px-4 py-2 bg-primary/5 hover:bg-primary/10 transition-colors border border-border/50"
+              >
                 {tag.name} ({tag.count})
               </Badge>
             </Link>

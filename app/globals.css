@@ -79,3 +79,56 @@
 .notion-page-content {
   padding: 0 0.5em;
 }
+
+/* 目次のスタイル */
+.notion-table-of-contents {
+  @apply fixed right-8 top-40 w-64 bg-background/80 backdrop-blur-sm p-4 rounded-lg border shadow-sm hidden xl:block !important;
+  max-height: calc(100vh - 12rem);
+  overflow-y: auto;
+}
+
+.notion-table-of-contents::-webkit-scrollbar {
+  width: 4px;
+}
+
+.notion-table-of-contents::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+.notion-table-of-contents::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/20 rounded-full;
+}
+
+.notion-table-of-contents-item {
+  @apply text-muted-foreground hover:text-foreground transition-colors !important;
+  padding: 4px 0;
+  font-size: 0.9rem !important;
+  line-height: 1.4 !important;
+}
+
+.notion-table-of-contents-active-item {
+  @apply text-foreground font-bold !important;
+}
+
+/* 目次があるときのメインコンテンツのレイアウト調整 */
+.notion-page-content {
+  @apply xl:mr-80 !important;
+}
+
+/* Notionコンテンツのスタイル調整 */
+.notion-page {
+  @apply !pb-20;
+}
+
+.notion-title {
+  @apply !hidden;
+}
+
+.notion-page-cover {
+  @apply !hidden;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 12px; /* ヘッダーの高さ分のパディングを追加 */
+}

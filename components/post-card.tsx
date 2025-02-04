@@ -18,6 +18,8 @@ interface PostCardProps {
 export function PostCard({ post }: PostCardProps) {
   // デフォルトのアイキャッチ画像
   const coverImage = post.coverImage || "/default-cover.jpg";
+  const hasIcon =
+    post.author.image && post.author.image !== "/default-avatar.png";
 
   return (
     <Card className="overflow-hidden h-full flex flex-col hover:shadow-lg transition-all duration-300 bg-card border-border">
@@ -44,18 +46,36 @@ export function PostCard({ post }: PostCardProps) {
             >
               <Badge
                 variant="secondary"
-                className="bg-secondary/50 hover:bg-secondary transition-colors"
+                className="bg-primary/5 hover:bg-primary/10 transition-colors border border-border/50"
               >
                 {tag}
               </Badge>
             </Link>
           ))}
         </div>
-        <Link href={`/posts/${post.slug}`} className="group/title">
-          <h2 className="text-xl font-semibold mb-2 transition-colors group-hover/title:text-primary">
-            {post.title}
-          </h2>
-        </Link>
+        <div className="flex items-start gap-2 mb-2">
+          {hasIcon && (
+            <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0 border border-border/50 ">
+              {post.icon?.startsWith("http") ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={post.icon}
+                  alt={post.title}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-xl leading-none">
+                  {post.icon}
+                </div>
+              )}
+            </div>
+          )}
+          <Link href={`/posts/${post.slug}`} className="group/title">
+            <h2 className="text-xl font-semibold transition-colors group-hover/title:text-primary">
+              {post.title}
+            </h2>
+          </Link>
+        </div>
         <p className="text-muted-foreground text-sm line-clamp-3">
           {post.excerpt}
         </p>

@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import TweetEmbed from "react-tweet-embed";
 import { Noto_Sans_JP } from "next/font/google";
+import { TableOfContents } from "./TableOfContents";
 // import { useTheme } from "next-themes";
 
 // スタイルのインポート
@@ -78,6 +79,7 @@ function Tweet({ id }: { id: string }) {
 
 interface NotionContentProps {
   content: ExtendedRecordMap;
+  showTableOfContents?: boolean;
 }
 
 // NotionRendererのラッパーにスタイルを追加
@@ -97,9 +99,10 @@ const notoSansJP = Noto_Sans_JP({
   adjustFontFallback: false,
 });
 
-export default function NotionContent({ content }: NotionContentProps) {
-  //   const { theme } = useTheme();
-
+export default function NotionContent({
+  content,
+  showTableOfContents = true,
+}: NotionContentProps) {
   if (!content) {
     return (
       <div className="text-center py-8 text-muted-foreground">
@@ -108,13 +111,13 @@ export default function NotionContent({ content }: NotionContentProps) {
     );
   }
 
-  //https://github.com/NotionX/react-notion-x/tree/master/examples/full
-
   return (
     <div className={notoSansJP.className}>
+      {showTableOfContents && <TableOfContents recordMap={content} />}
       <NotionContainer>
         <NotionRenderer
           recordMap={content}
+          fullPage={false}
           components={{
             nextImage: Image,
             nextLink: Link,
@@ -124,9 +127,6 @@ export default function NotionContent({ content }: NotionContentProps) {
             Modal,
             Tweet,
           }}
-          //   darkMode={theme === "dark"}
-          //   showTableOfContents={true}
-          //   minTableOfContentsItems={1}
         />
       </NotionContainer>
     </div>

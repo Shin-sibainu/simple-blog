@@ -93,9 +93,26 @@ export default async function PostPage({
                 </Link>
               ))}
             </div>
-            <h1 className="mt-4 text-3xl font-bold text-foreground">
-              {post.title}
-            </h1>
+            <div className="flex items-center gap-2 mt-4">
+              {post.icon && (
+                <div className="w-8 h-8 flex items-center justify-center mt-[0.15rem]">
+                  {post.icon.startsWith("http") ? (
+                    <Image
+                      src={post.icon}
+                      alt={post.title}
+                      width={32}
+                      height={32}
+                      className="rounded-sm"
+                    />
+                  ) : (
+                    <span className="text-2xl">{post.icon}</span>
+                  )}
+                </div>
+              )}
+              <h1 className="text-3xl font-bold text-foreground">
+                {post.title}
+              </h1>
+            </div>
             <div className="mt-4">
               <time className="text-sm text-muted-foreground">
                 {formatDate(post.date)}
@@ -104,7 +121,7 @@ export default async function PostPage({
           </div>
         </div>
         <div className="prose prose-slate dark:prose-invert mt-8 max-w-none">
-          <NotionContent content={post.content} />
+          <NotionContent content={post.content} showTableOfContents={true} />
         </div>
       </div>
     </div>

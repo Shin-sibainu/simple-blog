@@ -36,7 +36,7 @@ export interface Post {
   date: string;
   description: string;
   excerpt: string;
-  content: string;
+  content: any;
   author: {
     name: string;
     image: string;
@@ -45,6 +45,7 @@ export interface Post {
   coverImage: string;
   tags: string[];
   featured: boolean;
+  icon?: string | null;
 }
 
 export interface Profile {
@@ -123,6 +124,64 @@ export const getAllPosts = cache(async (): Promise<Post[]> => {
             ? formatImageUrl(firstBlock.value.format.page_cover, post.id)
             : "/default-cover.jpg";
 
+          // アイコンの処理
+          let icon = null;
+          if (firstBlock?.value?.format?.page_icon) {
+            const pageIcon = firstBlock.value.format.page_icon;
+            if (
+              pageIcon.length === 1 ||
+              pageIcon.length === 2 ||
+              pageIcon.startsWith("🏺") // 絵文字の場合
+            ) {
+              // 絵文字の場合
+              icon = pageIcon;
+            } else if (pageIcon.startsWith("http")) {
+              // 画像URLの場合
+              icon = pageIcon;
+            } else if (pageIcon.includes("notion.so")) {
+              // Notion内部の絵文字URLの場合
+              try {
+                const decodedIcon = decodeURIComponent(pageIcon);
+                if (decodedIcon.startsWith("🏺")) {
+                  icon = decodedIcon;
+                } else {
+                  icon = pageIcon;
+                }
+              } catch {
+                icon = pageIcon;
+              }
+            }
+          }
+
+          // アイコンの処理
+          let authorImage = post.AuthorImage || "/default-avatar.png";
+          if (firstBlock?.value?.format?.page_icon) {
+            const pageIcon = firstBlock.value.format.page_icon;
+            if (
+              pageIcon.length === 1 ||
+              pageIcon.length === 2 ||
+              pageIcon.startsWith("🏺") // 絵文字の場合
+            ) {
+              // 絵文字の場合
+              authorImage = pageIcon;
+            } else if (pageIcon.startsWith("http")) {
+              // 画像URLの場合
+              authorImage = pageIcon;
+            } else if (pageIcon.includes("notion.so")) {
+              // Notion内部の絵文字URLの場合
+              try {
+                const decodedIcon = decodeURIComponent(pageIcon);
+                if (decodedIcon.startsWith("🏺")) {
+                  authorImage = decodedIcon;
+                } else {
+                  authorImage = pageIcon;
+                }
+              } catch {
+                authorImage = pageIcon;
+              }
+            }
+          }
+
           const date = post.Published
             ? new Date(post.Published).toISOString().split("T")[0]
             : new Date().toISOString().split("T")[0];
@@ -134,7 +193,7 @@ export const getAllPosts = cache(async (): Promise<Post[]> => {
             date,
             author: {
               name: post.Author || "匿名",
-              image: post.AuthorImage || "/default-avatar.png",
+              image: authorImage,
               bio: post.AuthorBio || "",
             },
             coverImage,
@@ -143,6 +202,7 @@ export const getAllPosts = cache(async (): Promise<Post[]> => {
             excerpt: post.Description || "",
             content: "",
             featured: post.Featured || false,
+            icon,
           };
         })
     );
@@ -168,9 +228,45 @@ export const getPostBySlug = cache(async (slug: string) => {
     // NotionAPIを使用してrecordMapを取得
     const recordMap = await notion.getPage(post.id);
 
+    // アイコンの取得
+    const block = Object.values(recordMap.block)[0]?.value;
+    let icon = null;
+
+    if (block?.format?.page_icon) {
+      const pageIcon = block.format.page_icon;
+      if (
+        pageIcon.length === 1 ||
+        pageIcon.length === 2 ||
+        pageIcon.startsWith("🏺") // 絵文字の場合
+      ) {
+        // 絵文字の場合
+        icon = pageIcon;
+      } else if (pageIcon.startsWith("http")) {
+        // 画像URLの場合
+        icon = pageIcon;
+      } else if (pageIcon.includes("notion.so")) {
+        // Notion内部の絵文字URLの場合
+        try {
+          const decodedIcon = decodeURIComponent(pageIcon);
+          if (decodedIcon.startsWith("🏺")) {
+            icon = decodedIcon;
+          } else {
+            icon = `https://www.notion.so/image/${encodeURIComponent(
+              pageIcon
+            )}?table=block&id=${block.id}&cache=v2`;
+          }
+        } catch {
+          icon = `https://www.notion.so/image/${encodeURIComponent(
+            pageIcon
+          )}?table=block&id=${block.id}&cache=v2`;
+        }
+      }
+    }
+
     return {
       ...post,
-      content: recordMap, // recordMapをcontentとして返す
+      content: recordMap,
+      icon,
     };
   } catch (error) {
     console.error(`Error fetching post with slug ${slug}:`, error);
@@ -301,6 +397,37 @@ export const getProfile = cache(async (): Promise<Profile> => {
     // プロフィールページの内容を取得
     const profileRecordMap = await notion.getPage(profileId);
 
+    // SNSリンクを探す
+    const socialLinks = Object.values(profileRecordMap.block).reduce(
+      (acc: any, block) => {
+        const value = block?.value;
+        if (!value || value.type !== "text") return acc;
+
+        const text = JSON.stringify(value.properties || {});
+
+        // TwitterリンクをチェックしてURLを抽出
+        if (text.includes("Twitter") || text.includes("twitter.com")) {
+          const match = text.match(/https:\/\/twitter\.com\/[^\s"]+/);
+          if (match) acc.twitter = match[0];
+        }
+
+        // GitHubリンクをチェックしてURLを抽出
+        if (text.includes("GitHub") || text.includes("github.com")) {
+          const match = text.match(/https:\/\/github\.com\/[^\s"]+/);
+          if (match) acc.github = match[0];
+        }
+
+        // LinkedInリンクをチェックしてURLを抽出
+        if (text.includes("LinkedIn") || text.includes("linkedin.com")) {
+          const match = text.match(/https:\/\/[^\s"]*linkedin\.com[^\s"]+/);
+          if (match) acc.linkedin = match[0];
+        }
+
+        return acc;
+      },
+      {}
+    );
+
     // ページの基本情報を取得
     const block = Object.values(profileRecordMap.block)[0]?.value;
     const pageTitle = block?.properties?.title?.[0]?.[0] || "Profile";
@@ -311,9 +438,9 @@ export const getProfile = cache(async (): Promise<Profile> => {
       avatar: "/default-avatar.png",
       role: "",
       social: {
-        twitter: "",
-        github: "",
-        linkedin: "",
+        twitter: socialLinks.twitter || "",
+        github: socialLinks.github || "",
+        linkedin: socialLinks.linkedin || "",
       },
       skills: [],
       content: profileRecordMap,
@@ -325,7 +452,11 @@ export const getProfile = cache(async (): Promise<Profile> => {
       bio: "",
       avatar: "/default-avatar.png",
       role: "役職未設定",
-      social: {},
+      social: {
+        twitter: "",
+        github: "",
+        linkedin: "",
+      },
       skills: [],
       content: null,
     };

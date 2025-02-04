@@ -2,25 +2,15 @@ import Link from "next/link";
 import Image from "next/image";
 import { formatDate } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
+import { Post } from "@/lib/notion";
 
 interface FeaturedPostProps {
-  post: {
-    id: string;
-    title: string;
-    slug: string;
-    date: string;
-    description: string;
-    author: {
-      name: string;
-      image: string;
-    };
-    coverImage: string;
-    tags: string[];
-    featured: boolean;
-  };
+  post: Post;
 }
 
 export function FeaturedPost({ post }: FeaturedPostProps) {
+  const hasIcon = post.icon && post.icon !== "/default-avatar.png";
+
   return (
     <div className="group relative rounded-lg border overflow-hidden">
       <div className="aspect-[21/9] relative">
@@ -47,11 +37,29 @@ export function FeaturedPost({ post }: FeaturedPostProps) {
             </div>
           )}
           <div>
-            <h3 className="text-2xl font-semibold tracking-tight">
-              <Link href={`/posts/${post.slug}`} className="hover:underline">
-                {post.title}
-              </Link>
-            </h3>
+            <div className="flex items-start gap-2">
+              {hasIcon && (
+                <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 border border-border/50">
+                  {post.icon?.startsWith("http") ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={post.icon}
+                      alt={post.title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-2xl leading-none">
+                      {post.icon}
+                    </div>
+                  )}
+                </div>
+              )}
+              <h3 className="text-2xl font-semibold tracking-tight">
+                <Link href={`/posts/${post.slug}`} className="hover:underline">
+                  {post.title}
+                </Link>
+              </h3>
+            </div>
             <div className="mt-2 line-clamp-3 text-muted-foreground">
               {post.description}
             </div>
