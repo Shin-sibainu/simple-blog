@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Suspense } from "react";
 import { HeaderContent } from "./header-content";
 import { NavLinks } from "./nav-links";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const navigation = [
   { name: "ホーム", href: "/" },
@@ -17,10 +18,7 @@ export function Header() {
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8" aria-label="Top">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
-            <Link
-              href="/"
-              className="flex items-center space-x-2 text-xl"
-            >
+            <Link href="/" className="flex items-center space-x-2 text-xl">
               <Suspense fallback={<span>読み込み中...</span>}>
                 <HeaderContent />
               </Suspense>
@@ -30,7 +28,8 @@ export function Header() {
               className="ml-10 hidden space-x-8 lg:block"
             />
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center space-x-2">
+            <ThemeToggle />
             <Link href="/search">
               <Button
                 variant="ghost"

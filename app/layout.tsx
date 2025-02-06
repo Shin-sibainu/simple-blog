@@ -1,17 +1,12 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { Noto_Sans_JP } from "next/font/google";
+import { Inter } from "next/font/google";
+import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { getDatabase } from "@/lib/notion";
 
-const notoSansJP = Noto_Sans_JP({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  display: "swap",
-  preload: true,
-  adjustFontFallback: false,
-});
+const inter = Inter({ subsets: ["latin"] });
 
 // メタデータを動的に生成する関数
 async function generateMetadata(): Promise<Metadata> {
@@ -76,13 +71,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ja">
-      <body className={`${notoSansJP.className}`}>
-        <div className="flex min-h-screen flex-col">
+    <html lang="ja" suppressHydrationWarning>
+      <body className={inter.className}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />
-        </div>
+        </ThemeProvider>
       </body>
     </html>
   );

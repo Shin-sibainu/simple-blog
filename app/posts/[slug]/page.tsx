@@ -26,25 +26,33 @@ export async function generateMetadata({
     };
   }
 
-  const title = post.title || "無題";
+  const title = post.title;
   const description = post.description || post.excerpt;
+  const ogImage = `/posts/${params.slug}/opengraph-image`;
 
   return {
     title,
     description,
     openGraph: {
-      title: post.title,
+      title,
       description,
       type: "article",
       publishedTime: post.date,
+      url: `/posts/${params.slug}`,
       images: [
         {
-          url: post.coverImage,
+          url: ogImage,
           width: 1200,
           height: 630,
-          alt: post.title,
+          alt: title,
         },
       ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImage],
     },
   };
 }

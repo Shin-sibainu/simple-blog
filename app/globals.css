@@ -25,6 +25,7 @@
     --ring: 221.2 83.2% 53.3%;
     --radius: 0.5rem;
     --notion-font: inherit;
+    color-scheme: light;
   }
 
   .dark {
@@ -47,6 +48,7 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 224.3 76.3% 48%;
+    color-scheme: dark;
   }
 }
 
@@ -59,10 +61,16 @@
   }
 }
 
+/* テーマ切り替えアニメーション */
+:root * {
+  @apply transition-colors duration-300;
+}
+
 /* react-notion-xのスタイル上書き */
 .notion {
   font-family: inherit !important;
-  color: hsl(0, 0%, 10%) !important;
+  color: hsl(var(--foreground)) !important;
+  background: transparent !important;
 }
 
 /* ダークモードの場合 */
@@ -71,9 +79,68 @@
 }
 
 .notion-text {
+  color: hsl(var(--foreground)) !important;
   line-height: 1.8 !important;
   margin: 0.75em 0 !important;
   letter-spacing: 0.01em !important;
+}
+
+.notion-page {
+  @apply !pb-20;
+  background: transparent !important;
+}
+
+.notion-title {
+  @apply !hidden;
+}
+
+.notion-page-cover {
+  @apply !hidden;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 70px; /* モバイル用のパディング */
+}
+
+/* デスクトップサイズ（1280px以上）でパディングを小さく */
+@media (min-width: 1280px) {
+  html {
+    scroll-padding-top: 12px;
+  }
+}
+
+/* Notionのブロックスタイル調整 */
+.notion-code {
+  background-color: hsl(var(--muted)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+}
+
+.notion-link {
+  color: hsl(var(--primary)) !important;
+  opacity: 1 !important;
+}
+
+.notion-bookmark {
+  border: 1px solid hsl(var(--border)) !important;
+  background: hsl(var(--card)) !important;
+  color: hsl(var(--card-foreground)) !important;
+}
+
+.notion-bookmark:hover {
+  background: hsl(var(--accent)) !important;
+}
+
+.notion-quote {
+  border-left: 3px solid hsl(var(--primary)) !important;
+  background: hsl(var(--muted)) !important;
+}
+
+.notion-h1,
+.notion-h2,
+.notion-h3 {
+  color: hsl(var(--foreground)) !important;
+  font-weight: 600 !important;
 }
 
 .notion-page-content {
@@ -118,17 +185,4 @@
 /* Notionコンテンツのスタイル調整 */
 .notion-page {
   @apply !pb-20;
-}
-
-.notion-title {
-  @apply !hidden;
-}
-
-.notion-page-cover {
-  @apply !hidden;
-}
-
-html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 12px; /* ヘッダーの高さ分のパディングを追加 */
 }
