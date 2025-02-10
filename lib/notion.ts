@@ -322,6 +322,21 @@ export const getDatabase = cache(async () => {
     const author = properties.author?.[0]?.[0];
     const site = properties.site?.[0]?.[0];
 
+    // descriptionの取得を試みる
+    // 1. プロパティからの取得
+    let description = properties.description?.[0]?.[0];
+
+    // 2. プロパティになければ、最初のテキストブロックを探す
+    if (!description) {
+      const blocks = Object.values(recordMap.block);
+      const textBlock = blocks.find(
+        (block) =>
+          block?.value?.type === "text" &&
+          block?.value?.properties?.title?.[0]?.[0]
+      );
+      description = textBlock?.value?.properties?.title?.[0]?.[0];
+    }
+
     const result = {
       icon,
       cover: block?.format?.page_cover
@@ -334,6 +349,8 @@ export const getDatabase = cache(async () => {
       // 追加の情報
       author,
       site,
+      description:
+        description || "A classic blog template built with Next.js and Notion", // デフォルト値を設定
     };
 
     return result;
@@ -346,6 +363,7 @@ export const getDatabase = cache(async () => {
       coverPosition: 0.5,
       author: undefined,
       site: undefined,
+      description: "A classic blog template built with Next.js and Notion",
     };
   }
 });

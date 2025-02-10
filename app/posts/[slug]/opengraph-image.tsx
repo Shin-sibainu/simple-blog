@@ -1,8 +1,9 @@
-import { getPostBySlug } from "@/lib/notion";
 import { ImageResponse } from "next/server";
+import { getPostBySlug } from "@/lib/notion";
 
 export const runtime = "edge";
-export const alt = "Blog Post";
+export const revalidate = 60 * 60 * 24;
+export const alt = "Blog Post OGP";
 export const size = {
   width: 1200,
   height: 630,
@@ -13,15 +14,10 @@ export default async function Image({ params }: { params: { slug: string } }) {
   const post = await getPostBySlug(params.slug);
   if (!post) return new Response("Not Found", { status: 404 });
 
-  // フォントファイルの読み込み
-  const interFont = await fetch(
-    new URL("https://fonts.cdnfonts.com/s/19795/Inter-Medium.woff")
-  ).then((res) => res.arrayBuffer());
-
   // タイトルの長さに応じてフォントサイズを調整
   const titleLength = post.title.length;
   const titleFontSize = titleLength > 30 ? 56 : titleLength > 20 ? 64 : 72;
-  
+
   // 説明文を制限（最大2行程度）
   const description =
     post.description.length > 80
@@ -44,7 +40,6 @@ export default async function Image({ params }: { params: { slug: string } }) {
             justifyContent: "center",
             alignItems: "center",
             padding: "32px",
-            fontFamily: "Inter",
           }}
         >
           {/* メインコンテンツコンテナ */}
@@ -262,14 +257,6 @@ export default async function Image({ params }: { params: { slug: string } }) {
       ),
       {
         ...size,
-        fonts: [
-          {
-            name: "Inter",
-            data: interFont,
-            style: "normal",
-            weight: 500,
-          },
-        ],
       }
     );
   } catch (e) {

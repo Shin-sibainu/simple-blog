@@ -1,12 +1,16 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Noto_Sans_JP } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { getDatabase } from "@/lib/notion";
 
-const inter = Inter({ subsets: ["latin"] });
+const notoSansJP = Noto_Sans_JP({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  preload: true,
+});
 
 // メタデータを動的に生成する関数
 async function generateMetadata(): Promise<Metadata> {
@@ -14,7 +18,7 @@ async function generateMetadata(): Promise<Metadata> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
   const title = dbInfo.title || "Classic";
-  const description = "A classic blog template built with Next.js and Notion";
+  const description = dbInfo.description;
 
   return {
     metadataBase: new URL(baseUrl),
@@ -23,6 +27,10 @@ async function generateMetadata(): Promise<Metadata> {
       template: `%s | ${title}`,
     },
     description,
+    authors: dbInfo.author ? [{ name: dbInfo.author }] : undefined,
+    generator: "Next.js",
+    applicationName: title,
+    keywords: ["blog", "notion", "next.js"],
     openGraph: {
       title: {
         default: title,
@@ -31,6 +39,7 @@ async function generateMetadata(): Promise<Metadata> {
       description,
       type: "website",
       siteName: title,
+      locale: "ja_JP",
       images: [
         {
           url: "/opengraph-image.png",
@@ -46,6 +55,7 @@ async function generateMetadata(): Promise<Metadata> {
       description,
       creator: dbInfo.author ? `@${dbInfo.author}` : undefined,
       site: dbInfo.site ? `@${dbInfo.site}` : undefined,
+      images: ["/opengraph-image.png"],
     },
     alternates: {
       canonical: "/",
@@ -57,7 +67,23 @@ async function generateMetadata(): Promise<Metadata> {
         index: true,
         follow: true,
         "max-image-preview": "large",
+        "max-video-preview": -1,
+        "max-snippet": -1,
       },
+    },
+    verification: {
+      google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    },
+    icons: {
+      icon: "/favicon.ico",
+      shortcut: "/favicon.ico",
+      apple: "/apple-touch-icon.png",
+    },
+    // manifest: "/site.webmanifest",
+    viewport: {
+      width: "device-width",
+      initialScale: 1,
+      maximumScale: 1,
     },
   };
 }
@@ -72,7 +98,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={`${notoSansJP.className}`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
