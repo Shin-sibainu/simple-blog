@@ -75,9 +75,14 @@ async function generateMetadata(): Promise<Metadata> {
       google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
     },
     icons: {
-      icon: "/favicon.ico",
+      icon: [
+        { url: "/favicon.ico" },
+        { url: "/icon.png", type: "image/png", sizes: "192x192" },
+      ],
+      apple: [
+        { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+      ],
       shortcut: "/favicon.ico",
-      apple: "/apple-touch-icon.png",
     },
     // manifest: "/site.webmanifest",
     viewport: {
