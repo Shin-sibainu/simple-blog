@@ -54,11 +54,11 @@ export function FeaturedPost({ post }: FeaturedPostProps) {
                   )}
                 </div>
               )}
-              <h3 className="text-2xl font-semibold tracking-tight">
-                <Link href={`/posts/${post.slug}`} className="hover:underline">
+              <Link href={`/posts/${post.slug}`} className="hover:underline">
+                <h3 className="text-xl md:text-2xl font-semibold tracking-tight">
                   {post.title}
-                </Link>
-              </h3>
+                </h3>
+              </Link>
             </div>
             <div className="mt-2 line-clamp-3 text-muted-foreground">
               {post.description}
