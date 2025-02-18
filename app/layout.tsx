@@ -40,22 +40,6 @@ async function generateMetadata(): Promise<Metadata> {
       type: "website",
       siteName: title,
       locale: "ja_JP",
-      images: [
-        {
-          url: "/opengraph-image.png",
-          width: 1200,
-          height: 630,
-          alt: `${title} Blog`,
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      creator: dbInfo.author ? `@${dbInfo.author}` : undefined,
-      site: dbInfo.site ? `@${dbInfo.site}` : undefined,
-      images: ["/opengraph-image.png"],
     },
     alternates: {
       canonical: "/",
@@ -67,12 +51,7 @@ async function generateMetadata(): Promise<Metadata> {
         index: true,
         follow: true,
         "max-image-preview": "large",
-        "max-video-preview": -1,
-        "max-snippet": -1,
       },
-    },
-    verification: {
-      google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
     },
     icons: {
       icon: [
@@ -84,7 +63,6 @@ async function generateMetadata(): Promise<Metadata> {
       ],
       shortcut: "/favicon.ico",
     },
-    // manifest: "/site.webmanifest",
     viewport: {
       width: "device-width",
       initialScale: 1,
