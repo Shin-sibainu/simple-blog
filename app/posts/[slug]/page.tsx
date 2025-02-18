@@ -88,7 +88,7 @@ export default async function PostPage({
               priority
             />
           </div>
-          <div className="mt-8">
+          <div className="mt-8 flex flex-col items-center justify-center">
             <div className="flex flex-wrap gap-2">
               {post.tags.map((tag) => (
                 <Link key={tag} href={`/tags/${tag.toLowerCase()}`}>
