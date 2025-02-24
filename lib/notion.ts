@@ -66,12 +66,20 @@ export interface Profile {
 function formatImageUrl(url: string, blockId: string) {
   if (!url) return "/default-cover.jpg";
 
+  // attachmentスキームの処理
   if (url.startsWith("attachment:")) {
-    // attachmentスキームの場合、Notion公式APIの画像URLを構築
-    const attachmentId = url.split(":")[1];
+    const attachmentId = url.split(":")[1].split(":")[0];
     return `https://www.notion.so/image/${encodeURIComponent(
-      `https://www.notion.so/signed/${attachmentId}`
-    )}?table=block&id=${blockId}&cache=v2`;
+      `https://prod-files-secure.s3.us-west-2.amazonaws.com/${attachmentId}`
+    )}?table=block&id=${blockId}&width=3840`;
+  }
+
+  // signed URLの処理
+  if (url.includes("/signed/")) {
+    const signedId = url.split("/signed/")[1].split("?")[0];
+    return `https://www.notion.so/image/${encodeURIComponent(
+      `https://prod-files-secure.s3.us-west-2.amazonaws.com/${signedId}`
+    )}?table=block&id=${blockId}&width=3840`;
   }
 
   if (url.startsWith("/images")) {
@@ -79,15 +87,16 @@ function formatImageUrl(url: string, blockId: string) {
   }
 
   if (url.startsWith("https://prod-files-secure")) {
-    const encoded = encodeURIComponent(url);
-    return `https://www.notion.so/image/${encoded}?table=block&id=${blockId}&cache=v2`;
+    return `https://www.notion.so/image/${encodeURIComponent(
+      url
+    )}?table=block&id=${blockId}&width=3840`;
   }
 
-  // 外部URLの場合もNotion経由で取得
+  // 外部URLの場合
   if (url.startsWith("http")) {
     return `https://www.notion.so/image/${encodeURIComponent(
       url
-    )}?table=block&id=${blockId}&cache=v2`;
+    )}?table=block&id=${blockId}&width=3840`;
   }
 
   return url;
@@ -120,9 +129,25 @@ export const getAllPosts = cache(async (): Promise<Post[]> => {
               (block as NotionBlock)?.value?.type === "page"
           );
 
-          const coverImage = firstBlock?.value?.format?.page_cover
-            ? formatImageUrl(firstBlock.value.format.page_cover, post.id)
-            : "/default-cover.jpg";
+          // カバー画像の処理を修正
+          let coverImage = "/default-cover.jpg";
+          if (firstBlock?.value?.format?.page_cover) {
+            const coverUrl = firstBlock.value.format.page_cover;
+            if (coverUrl.startsWith("https://prod-files-secure")) {
+              // S3のURLの場合
+              coverImage = `https://www.notion.so/image/${encodeURIComponent(
+                coverUrl
+              )}?table=block&id=${post.id}&width=3840`;
+            } else if (coverUrl.startsWith("/images")) {
+              // Notionの内部画像の場合
+              coverImage = `https://www.notion.so${coverUrl}`;
+            } else {
+              // その他のURLの場合
+              coverImage = `https://www.notion.so/image/${encodeURIComponent(
+                coverUrl
+              )}?table=block&id=${post.id}&width=3840`;
+            }
+          }
 
           // アイコンの処理
           let icon = null;
@@ -251,14 +276,10 @@ export const getPostBySlug = cache(async (slug: string) => {
           if (decodedIcon.startsWith("🏺")) {
             icon = decodedIcon;
           } else {
-            icon = `https://www.notion.so/image/${encodeURIComponent(
-              pageIcon
-            )}?table=block&id=${block.id}&cache=v2`;
+            icon = pageIcon;
           }
         } catch {
-          icon = `https://www.notion.so/image/${encodeURIComponent(
-            pageIcon
-          )}?table=block&id=${block.id}&cache=v2`;
+          icon = pageIcon;
         }
       }
     }
