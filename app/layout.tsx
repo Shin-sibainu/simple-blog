@@ -40,6 +40,23 @@ async function generateMetadata(): Promise<Metadata> {
       type: "website",
       siteName: title,
       locale: "ja_JP",
+      images: [
+        {
+          url: "/default-cover.jpg",
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: {
+        default: title,
+        template: `%s | ${title}`,
+      },
+      description,
+      images: ["/default-cover.jpg"],
     },
     alternates: {
       canonical: "/",

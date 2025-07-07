@@ -2,7 +2,6 @@
 // Notionデータ取得用の関数を改善
 import { NotionAPI } from "notion-client";
 import { getPageImageUrls } from "notion-utils";
-import { cache } from "react";
 
 const NOTION_API_BASE = "https://notion-api.splitbee.io/v1";
 const NOTION_PAGE_ID = process.env.NOTION_PAGE_ID as string;
@@ -103,7 +102,7 @@ function formatImageUrl(url: string, blockId: string) {
 }
 
 //notion-api-worker and react-notion
-export const getAllPosts = cache(async (): Promise<Post[]> => {
+export const getAllPosts = async (): Promise<Post[]> => {
   try {
     const res = await fetch(`${NOTION_API_BASE}/table/${NOTION_PAGE_ID}`, {
       next: { revalidate: 10 },
@@ -241,9 +240,9 @@ export const getAllPosts = cache(async (): Promise<Post[]> => {
     console.error("Error fetching all posts:", error);
     return [];
   }
-});
+};
 
-export const getPostBySlug = cache(async (slug: string) => {
+export const getPostBySlug = async (slug: string) => {
   try {
     const posts = await getAllPosts();
     const post = posts.find((p: any) => p.slug === slug);
@@ -293,10 +292,10 @@ export const getPostBySlug = cache(async (slug: string) => {
     console.error(`Error fetching post with slug ${slug}:`, error);
     return null;
   }
-});
+};
 
 // react-notion-x
-export const getDatabase = cache(async () => {
+export const getDatabase = async () => {
   try {
     const recordMap = await notion.getPage(NOTION_PAGE_ID);
 
@@ -387,9 +386,9 @@ export const getDatabase = cache(async () => {
       description: "A classic blog template built with Next.js and Notion",
     };
   }
-});
+};
 
-export const getProfile = cache(async (): Promise<Profile> => {
+export const getProfile = async (): Promise<Profile> => {
   try {
     // メインページからコンテンツを取得
     const recordMap = await notion.getPage(NOTION_PAGE_ID);
@@ -500,4 +499,4 @@ export const getProfile = cache(async (): Promise<Profile> => {
       content: null,
     };
   }
-});
+};

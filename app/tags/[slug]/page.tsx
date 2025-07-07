@@ -5,6 +5,9 @@ import { getAllPosts } from "@/lib/notion";
 
 const POSTS_PER_PAGE = 6;
 
+// ISRの設定 - 10秒間隔で再生成
+export const revalidate = 10;
+
 // タグをURLセーフな形式に変換する関数
 function encodeTag(tag: string) {
   return encodeURIComponent(tag.toLowerCase().trim());

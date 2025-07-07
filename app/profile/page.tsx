@@ -1,5 +1,39 @@
 import { getProfile, getDatabase } from "@/lib/notion";
 import NotionContent from "@/components/notion/NotionContent";
+import { Metadata } from "next";
+
+// ISRの設定 - 10秒間隔で再生成
+export const revalidate = 10;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const database = await getDatabase();
+  const title = `Profile | ${database.title || "My Blog"}`;
+  const description = "プロフィールページです。";
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "profile",
+      images: [
+        {
+          url: "/default-cover.jpg",
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/default-cover.jpg"],
+    },
+  };
+}
 
 export default async function ProfilePage() {
   const profile = await getProfile();

@@ -1,0 +1,1 @@
+"use strict";exports.id=3846,exports.ids=[3846],exports.modules={3846:(t,e,o)=>{o.r(e),o.d(e,{default:()=>s});let s=(0,o(8570).createProxy)(String.raw`C:\Users\じゅぶ\Desktop\dev\book\simple-blog\components\notion\NotionContent.tsx#default`)}};

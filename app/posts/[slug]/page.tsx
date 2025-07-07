@@ -7,6 +7,9 @@ import { getPostBySlug, getAllPosts } from "@/lib/notion";
 import dynamic from "next/dynamic";
 import { Metadata } from "next";
 
+// ISRの設定 - 10秒間隔で再生成
+export const revalidate = 10;
+
 const NotionContent = dynamic(
   () => import("@/components/notion/NotionContent"),
   { ssr: false }
@@ -28,7 +31,7 @@ export async function generateMetadata({
 
   const title = post.title;
   const description = post.description || post.excerpt;
-  const ogImage = `/posts/${params.slug}/opengraph-image`;
+  const ogImage = "/default-cover.jpg";
 
   return {
     title,
